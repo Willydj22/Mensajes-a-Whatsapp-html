@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Mensajes Masivos por WhatsApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #641e16;
+            color: #ffee58;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #ffee58;
+        }
+
+        textarea {
+            width: 80%;
+            background-color: #ff5722;
+            color: white;
+            max-width: 600px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #ffee58;
+            border-radius: 4px;
+            
+        }
+       
+
+        .output {
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px solid #ffee58;
+            border-radius: 4px;
+            background-color: #ff5722;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.5s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 600px) {
+            textarea, .output, button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Enviar Mensajes Masivos por WhatsApp</h2>
+    
+    <!-- Área de texto para pegar la lista de números -->
+    <textarea id="numeros" placeholder="Pega la lista de números aquí (uno por línea)" rows="10" cols="50"></textarea>
+    <br>
+
+    <!-- Área de texto para escribir el mensaje -->
+    <textarea id="mensaje" placeholder="Escribe tu mensaje aquí..." rows="4" cols="50"></textarea>
+    <br>
+
+    <!-- Cuadro que muestra el siguiente número -->
+    <div class="output">
+        <p id="siguienteNumero">Ningún número en la lista.</p>
+        <button id="enviarBtn" onclick="enviarSiguiente()">Enviar</button>
+    </div>
+
+    <script>
+        let numeros = [];
+
+        function enviarMensajes() {
+            const numerosTexto = document.getElementById("numeros").value.trim();
+            const mensaje = document.getElementById("mensaje").value.trim();
+            
+            if (!numerosTexto || !mensaje) {
+                alert("Por favor, pega una lista de números y escribe un mensaje antes de empezar.");
+                return;
+            }
+
+            numeros = numerosTexto.split('\n').map(num => num.trim()).filter(num => num);
+            mostrarSiguienteNumero();
+        }
+
+        function mostrarSiguienteNumero() {
+            if (numeros.length === 0) {
+                document.getElementById("siguienteNumero").innerText = "No hay más números en la lista.";
+                document.getElementById("enviarBtn").disabled = true;
+                return;
+            }
+
+            const numero = numeros[0];
+            document.getElementById("siguienteNumero").innerText = `Siguiente número: ${numero}`;
+        }
+
+        function enviarSiguiente() {
+            if (numeros.length === 0) {
+                alert("No hay más números en la lista.");
+                return;
+            }
+
+            const numero = numeros.shift(); // Elimina el primer número de la lista
+            const mensaje = document.getElementById("mensaje").value.trim();
+            const url = `https://api.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+
+            // Actualiza la lista en el textarea
+            document.getElementById("numeros").value = numeros.join('\n');
+            mostrarSiguienteNumero();
+        }
+
+        // Inicializa la lista de números y el primer número a mostrar
+        document.getElementById("enviarBtn").addEventListener("click", enviarMensajes);
+    </script>
+</body>
+</html>
